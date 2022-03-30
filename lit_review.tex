@@ -244,10 +244,43 @@ It may not be readily obvious why it is this decryption works:
     &=NTT^{-1}(\mathbf{b}^T\circ \mathbf{r}+e_2+m)-NTT^{-1}(\mathbf{s}^T\circ \mathbf{A}^T\circ \mathbf{r}+\mathbf{e}_1)\\
     &=NTT^{-1}(\mathbf{b}^T\circ \mathbf{r}+e_2+m-\mathbf{s}^T\circ \mathbf{A}^T\circ \mathbf{r}+\mathbf{e}_1)\\
     &=NTT^{-1}(( \mathbf{A} \circ \mathbf{s})^T \circ \mathbf{r} - (\mathbf{s}^T \circ \mathbf{A} ^T) \circ \mathbf{r} + \mathbf{e} ^T + \mathbf{e}_1 + e_2 + m)\\
-    &=NTT^{-1}(m+\mathbf{e}^T+\mathbf{e}_1+e_2)\\
-    &=m
+    &=NTT^{-1}(m+\mathbf{e}^T+\mathbf{e}_1+e_2)
 \end{align*}
-As we can assume the errors are small.\footnote{I'm not 100\% sure on the last step as I have only seen an LWE setup encrypting a single bit and so you can disregard errors by seeing if it is approx. 0 or $\frac{q-1}{2}$.}
+
+Therefore, we decrypt each bit as 0 if it is closer to 0 than $\lfloor \frac{q}{2} \mod{q}\rfloor $, otherwise we decrypt as 1.\footnote{I'm not 100\% sure on the last step as I have only seen an LWE setup encrypting a single bit and so you can disregard errors by seeing if it is approx. 0 or $\frac{q}{2}$.}
+
+\section{Applying our security notions to MLWE and \textsc{Kyber}.PKE}
+
+It can be seen that the security of \textsc{Kyber}.PKE can be reduced to the hard problem of MLWE, and in both our security notions, we rely on the statement
+\[\mathbb{P} (\mathcal{A} \mbox{ succeeds}) = 1/2 + \varepsilon \mbox{\qquad where $\varepsilon$ is negligible.}\]
+
+and so we can define what $\mathbb{P} (\mathcal{A} \mbox{ succeeds})$ is in order to begin to analyse the security of \textsc{Kyber}.PKE, and so we have $\mathbb{P} (\mathcal{A} \mbox{ succeeds})=$
+
+\[\mathbb{P} (a =  i |\substack{ (pk, sk) \leftarrow \textsc{Kyber}.PKE.KeyGen(),\\ (m_0, m_1, s) \leftarrow \mathcal{A}(pk),\\ c \leftarrow \textsc{Kyber}.PKE.Enc(pk, m_i),\\ a \leftarrow \mathcal{A}(s, c)}) \qquad \mbox{for $i \in \{0,1\}$.}\]
+
+
+Therefore, the advantage of the adversary (in our earlier definition written as $\varepsilon$),\\ $\mathbf{Adv}^{CPA}_{\textsc{Kyber}.PKE}(\mathcal{A}) =$
+\[ |\mathbb{P} (a =  i |\substack{(pk, sk) \leftarrow \textsc{Kyber}.PKE.KeyGen(),\\ (m_0, m_1, s) \leftarrow \mathcal{A}(pk),\\ c \leftarrow \textsc{Kyber}.PKE.Enc(pk, m_i),\\ a \leftarrow \mathcal{A}(s, c)}) - \frac{1}{2}| \]
+
+In other words, if $\mathbf{Adv}^{CPA}_{\textsc{Kyber}.PKE} \approx 0$ (or the adversary has no advantage), then \textsc{Kyber}.PKE is CCA secure.\par
+
+We can also do the same thing for an MLWE problem, and define the advantage of our adversary over this problem. The MLWE challenge that our adversary must solve is slightly different to our challenge that we gave them for \textsc{Kyber}.PKE, and instead of distinguishing which message created the challenge ciphertext, they must instead determine if the challenge was generated via the MLWE scheme, or if it was instead generated randomly. Thus, our $\mathbf{Adv}^{MLWE}(\mathcal{A})=$
+\[ |\mathbb{P}(b'=1|\substack{\mathbf{A}\leftarrow R^{m\times k}_q,\\ (\mathbf{s, e}) \leftarrow \mathcal{B}^k \times \mathcal{B}^m,\\ \mathbf{b} = \mathbf{As+e},\\ b'\leftarrow \mathcal{A}(\mathbf{A,b})}) - \mathbb{P}(b'=1|\substack{\mathbf{A}\leftarrow R^{m\times k}_q ,\\\mathbf{b}\leftarrow R^m_q,\\ b'\leftarrow \mathcal{A}(\mathbf{A,b})})| \]
+
+It can be seen that $\mathbf{Adv}^{CPA}_{\textsc{Kyber}.PKE}(\mathcal{A})$ can be re-written as:
+
+\[ |\mathbb{P}(b'=1|\substack{\mathbf{A} \leftarrow R^{m\times k}_q ,\\ (\mathbf{s, e}) \leftarrow \{0, 1\}^k \times \{0,1\}^m ,\\ \mathbf{b} = \mathbf{As} + \mathbf{e} + m_i ,\\ a \leftarrow \mathcal{A}(\mathbf{A,b})}) - \frac{1}{2}| \]
+
+by using the definitions of \textsc{Kyber}.PKE's algorithms. Thus, we can show that the IND-CCA security of \textsc{Kyber}.PKE is reducible to that of the MLWE scheme, $\mathbf{Adv}^{MLWE}(\mathcal{A})\approx $
+\[ |\mathbb{P}(b'=1|\substack{\mathbf{A} \leftarrow R^{m\times k}_q ,\\ (\mathbf{s, e}) \leftarrow \{0, 1\}^k \times \{0,1\}^m ,\\ \mathbf{b} = \mathbf{As} + \mathbf{e} + m_i ,\\ a \leftarrow \mathcal{A}(\mathbf{A,b})}) - \frac{1}{2}| \]
+
+as $\mathbb{P}(b'=1|\substack{\mathbf{A}\leftarrow R^{m\times k}_q ,\\\mathbf{b}\leftarrow R^m_q,\\ b'\leftarrow \mathcal{A}(\mathbf{A,b})})|$ can simply be reduced to the expected value $\frac{1}{2}$.
+
+\[ \Rightarrow \mathbf{Adv}^{CPA}_{\textsc{Kyber}.PKE}(\mathcal{A}) \leq_T \mathbf{Adv}^{MLWE}(\mathcal{A}) \]
+
+\section{conclusion}
+
+From this, we have come to the conclusion that provided MLWE is a hard problem, then \textsc{Kyber}.PKE can be shown to be IND-CPA secure. From this, we understand that in order to demonstrate security flaws in the scheme, we must address the underlying problem of MLWE or attack the scheme through insecure or improper algorithmic design (in much the same way GGH\cite{GGH} was attacked). As such, I believe that it would be relevant and more advantageous to focus my project on attacking the security properties of MLWE, as this may have impacts beyond the proposed scheme (although \textsc{Kyber} will still remain a key focus).
 
 
 \newpage
