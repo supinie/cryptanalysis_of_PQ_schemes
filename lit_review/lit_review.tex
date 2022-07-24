@@ -1,0 +1,290 @@
+\documentclass[a4paper, 10pt]{article}
+\usepackage[margin=1.5in]{geometry}
+\usepackage[utf8]{inputenc}
+\usepackage{hyperref}
+\usepackage{biblatex}
+\usepackage{amsthm}
+\usepackage{tikz}
+\usepackage{xcolor}
+\usepackage{amsmath}
+\usepackage{array}
+\usepackage{float}
+\usepackage{changepage}
+\usepackage[printonlyused,withpage]{acronym}
+\usepackage{scalerel,stackengine}
+\usepackage{amssymb}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usetikzlibrary{trees, shapes.geometric, arrows, fit}
+\tikzstyle{host} = [rectangle, minimum width=1cm, minimum height=1cm, text width=3.5cm, draw=black]
+\tikzstyle{arrow} = [thick,->,>=stealth, red]
+\bibliography{references.bib}
+\addbibresource{references.bib}
+\theoremstyle{definition}
+\newtheorem{definition}{Def}[section]
+\def\apeqA{\SavedStyle\sim}
+\def\apeq{\setstackgap{L}{\dimexpr.5pt+1.5\LMpt}\ensurestackMath{%
+  \ThisStyle{\mathrel{\Centerstack{{\apeqA} {\apeqA} {\apeqA}}}}}}
+
+% \title{IY5512 Summative CW}
+% \author{Joshua Limbrey}
+% \date{January 2022}
+
+\begin{document}
+
+\begin{titlepage}
+    \begin{center}
+        \Large
+        \textbf{100912024}
+
+        \vspace{0.1cm}
+        \textbf{Joshua Limbrey}
+
+        \vspace{5cm}
+        \LARGE
+        \textbf{Cryptanalysis of Lattice Based Post-Quantum Cryptosystems}
+
+        \vspace{0.1cm}
+        \large
+        \textbf{Preliminary Literature Review}
+
+        \vspace{0.1cm}
+        \textbf{March 2022}
+
+        \vspace{1.5cm}
+        \textbf{Supervisor: Dr Rachel Player}
+
+        \vfill
+
+        Submitted as part of the requirements for the award of the\\MSc in Information Security\\at Royal Holloway, University of London.
+
+
+        \vspace{2.5cm}
+
+    \end{center}
+\end{titlepage}
+
+\tableofcontents
+
+\newpage
+
+\section{List of Definitions, Notation, Abbreviations and Acronyms}
+\begin{acronym}
+    \acro{CCA}{chosen ciphertext attack}
+    \acro{CCA2}{adaptive chosen ciphertext attack}
+    \acro{CPA}{chosen plaintext attack}
+    \acro{KEM}{key encapsulation mechanism}
+    \acro{LWE}{learning with errors}
+    \acro{LWR}{learning with rounding}
+    \acro{NIST}{National Institute of Standards and Technology}
+    \acro{PKE}{public-key encryption}
+    \acro{IND}{indistinguishability of ciphertexts}
+    \acro{CVP}{closest vector problem}
+    \acro{SVP}{shortest vector problem}
+\end{acronym}
+
+\textbf{Note:} All security properties discussed will be for \ac{PKE} schemes.
+\begin{definition}[Indistinguishable]
+    \[(pk, sk) \leftarrow \Sigma.KeyGen \]
+    An adversary $\mathcal{A}$ produces two messages $m_0, m_1 \in \mathcal{M}$ (of equal length).
+    We choose a bit $b \in \{0,1\}$.
+    \[c = Enc_{pk}(m_b)\] 
+    Give the adversary $(c, pk)$, and allow them to generate a bit $a \in \{ 0,1\}$. If $a=b$, then the adversary has succeeded.\\
+    We say an encryption scheme $\Sigma$ is indistinguishable if the following holds:
+    \[\mathbb{P}(\mathcal{A} \mbox{ succeeds}) = \frac{1}{2} + \varepsilon \mbox{\qquad where $\varepsilon$ is negligible.}\] 
+    Intuitively, an encryption scheme has indistinguishability if an adversary is given a challenge ciphertext $c$, they cannot tell if it is from $m_0$ or $m_1$.
+\end{definition}
+\begin{definition}[IND-CPA or CPA security]
+    ``Indistinguishability of ciphertexts under chosen plaintext attack" for an encryption scheme $\Sigma$.\\
+    \[(pk, sk) \leftarrow \Sigma.KeyGen \]
+    The adversary $\mathcal{A} $ is given $pk$ and outputs two messages $m_0, m_1$ (of equal length), and is also given a challenge ciphertext:
+    \[c=Enc_{pk}(m_b)\mbox{\qquad for a chosen }b \in \{ 0,1\}.\] 
+    $\mathcal{A}$ now generates a bit $a \in \{ 0,1\}$, and if $a=b$ then $\mathcal{A}$ has succeeded.\\
+    The encryption scheme has CPA security if:
+    \[\mathbb{P} (\mathcal{A} \mbox{ succeeds}) = \frac{1}{2} + \varepsilon\mbox{\qquad where $\varepsilon$ is negligible.}\]
+    This can intuitively be thought of as if an attacker is given access to the public key (therefore able to encrypt plaintext's of their choice \textbf{but not decrypt}), then if given the encryption of one of two plaintexts, the attacker has negligible advantage over guessing.
+\end{definition}
+\begin{definition}[IND-CCA or CCA security]
+    ``Indistinguishability of ciphertexts under a chosen ciphertext attack" for an encryption scheme $\Sigma$.\\
+    \[(pk, sk) \leftarrow \Sigma.KeyGen \]
+    The adversary $\mathcal{A} $ is given $pk$ and a decryption oracle $\mathcal{O}_{Dec_{sk}}$, and outputs $m_0, m_1$ (of equal length). The adversary is only able to query this oracle up until it receives the challenge ciphertext,
+    \[c=Enc_{pk}(m_b)\mbox{\qquad for a chosen }b \in \{ 0,1\}.\] 
+    $\mathcal{A} $ then generates a bit $a \in \{ 0, 1\}$, and if $a=b$ then $\mathcal{A} $ has succeeded.
+    The encryption scheme has CCA security if:
+    \[\mathbb{P} (\mathcal{A} \mbox{ succeeds}) = \frac{1}{2} + \varepsilon \mbox{\qquad where $\varepsilon$ is negligible.}\]
+    Intuitively, this is if an adversary is able to ask for decryptions before given the challenge, once given the challenge ciphertext they have negligible advantage over guessing.
+\end{definition}
+\begin{definition}[IND-CCA2 or CCA2 security]
+    ``Indistinguishability of ciphertexts under an adaptive chosen ciphertext attack" for an encryption scheme $\Sigma$.\\
+    \[(pk, sk) \leftarrow \Sigma.KeyGen \]
+    The adversary $\mathcal{A} $ is given $pk$ and a decryption oracle $\mathcal{O}_{Dec_{sk}}$, and outputs $m_0, m_1$ (of equal length). The adversary then receives the challenge ciphertext,
+    \[c=Enc_{pk}(m_b)\mbox{\qquad for a chosen }b \in \{ 0,1\}.\]
+    but may continue to query $\mathcal{O}_{Dec_{sk}}$ provided the requested decryption is not of $c$
+    $\mathcal{A} $ then generates a bit $a \in \{ 0, 1\}$, and if $a=b$ then $\mathcal{A} $ has succeeded.
+    The encryption scheme has CCA security if:
+    \[\mathbb{P} (\mathcal{A} \mbox{ succeeds}) = \frac{1}{2} + \varepsilon \mbox{\qquad where $\varepsilon$ is negligible.}\]
+    Intuitively, this can be thought of as if an adversary has the ability to decrypt any ciphertext other than the challenge, can they decrypt the challenge.
+\end{definition}
+
+\textbf{Note:} We shall use $\mathcal{B} $ to denote the set of 8-bit unsigned integers (or bytes), ie. the set $\{0, ..., 255\}$
+
+
+
+\newpage
+
+% \section{Executive Summary}
+
+% \newpage
+
+\section{Introduction}
+
+In this PLR, we shall discuss two lattice-based cryptosystems submitted as part of the \ac{NIST} post-quantum call for proposals round 3. These are Saber\cite{saber}, an \ac{IND}-\ac{CCA} Mod-\ac{LWR} based \ac{KEM} and \textsc{Kyber}\cite{crystals}, an \ac{IND}-\ac{CCA2} Mod-\ac{LWE} based \ac{KEM}. In this preliminary literature review we will lay the foundation for my full dissertation, ensuring that both myself and the reader fully understand the cryptosystems being discussed.\par
+
+This will be broken down into:
+\begin{enumerate}
+    \item Algorithm specification of \textsc{Kyber}.\ac{PKE}
+    \item Demonstration of security properties
+    \item Transformation of \textsc{Kyber}.\ac{PKE} to \textsc{Kyber}.\ac{KEM}
+    \item Algorithm specification of Saber.\ac{PKE}
+    \item Demonstration of security properties
+    \item Transformation of Saber.\ac{PKE} to Saber.\ac{KEM}
+\end{enumerate}
+This will lay the foundation that will allow us to conduct cryptanalysis on both cryptosystems.
+
+\newpage
+
+\section{Understanding the LWE/LWR problem}
+
+\textsc{Kyber}.\ac{PKE} is a module \ac{LWE} based encryption scheme, and Saber.\ac{PKE} a module \ac{LWR} based encryption scheme; both relying on the hardness of the of the \ac{LWE}/\ac{LWR} problem(s) - both believed to be hard for both classical and quantum computers. Below is an informal mod $q$ set-up for the \ac{LWE} problem for a prime $q$:
+
+\begin{enumerate}
+    \item Let us chose an $n$ dimensional vector $\mathbf{s} \in \mathbb{F}^n_q$. This is our secret.
+    \item Let us randomly and uniformly generate an $m\times n$ matrix $\mathbf{A} $ over $\mathbb{F}_q$ from elements in $\mathbb{F} _q$.
+    \item Let us generate an $m$ dimensional vector, $\mathbf{e}$, s.t. $\mathbf{e}_i\sim \chi \forall i \in {1,...,m}$ independently for the distribution $\chi$ on $\mathbb{F}_q$ centred on $0$.
+    \item Let $\mathbf{b} = \mathbf{A}\mathbf{s}+\mathbf{e}$ over $\mathbb{F}_q$
+\end{enumerate}
+
+Now, given $(\mathbf{A},\mathbf{b})$, find $\mathbf{s}$. This problem can be reduced to solving the lattice problems \ac{SVP} or \ac{CVP}. First we consider the  $q$-ary lattice
+\[\mathcal{L}_{Im(\mathbf{A})}=\{y \in \mathbb{Z}^m | y=\mathbf{A}z\mod{q} \mbox{ for some } z \in \mathbb{Z}^n \}\]
+which is generated by the column vectors of our matrix $\mathbf{A}\mod{q}$. The \ac{LWR} problem instead uses deterministic rounding instead of adding the small random error $\mathbf{e}$\cite{LWR}.
+
+\newpage
+
+\section{Algorithm specification of \textsc{Kyber}.PKE}
+
+\textsc{Kyber}.PKE is defined over the ring $R \equiv \mathbb{Z} /(X^n+1)$ and $R_q\equiv \mathbb{Z}_q[X]/(X^n+1)$ where $n=2^{n'-1}$ s.t. $X^{n}+1$ is the $2^{n'}$\textsuperscript{th} cyclotomic polynomial\cite{crystals}. In relation to our earlier explained LWE problem, $R$ is $\mathbb{F}$ and $R_q$ is $\mathbb{F}_q$. We begin, by generating our matrix $\mathbf{A}$ using the following algorithm:
+\begin{algorithm}[H]
+    \caption{Generate keys.}
+    \begin{algorithmic}
+    \State $N:=0$
+    \State $(\rho, \sigma ):=G(d)$ \Comment Where G is a hash function s.t. $G:\mathcal{B}^* \rightarrow \mathcal{B}^{32}\times  \mathcal{B}^{32}$
+    \For{$i\gets 0, k-1$}
+        \For{$j\gets 0, k-1$}
+            \State $\mathbf{A}:=Parse(XOF(\rho , j, i))$ \Comment This essentially generates a random $k\times k$ matrix over $R_q$ as $\rho$ is pseudorandom from the hash function $G()$.
+        \EndFor
+    \EndFor
+    \For{$i\gets 0, k-1$}
+        \State $\mathbf{s}:=CBD(PRF(\sigma ,N))$ \Comment Where CBD is a function outputting a polynomial in $R_q$ with the coefficients distributed central-binomially. $PRF$ is a pseudorandom function, $PRF:\mathcal{B}^{32} \times \mathcal{B} \rightarrow \mathcal{B}^*$.
+        \State $N:=N+1$
+    \EndFor
+    \For{$i\gets 0, k-1$}
+        \State $\mathbf{e}:=CBD(PRF(\sigma ,N))$
+        \State $N:=N+1$
+    \EndFor
+    \State $\mathbf{s}:= NTT(\mathbf{s})$ \Comment Where NTT is a bijection mapping $f \in R_q$ to a polynomial with the coefficient vector.
+    \State $\mathbf{e}:= NTT(\mathbf{e})$
+    \State $\mathbf{b}:=\mathbf{As}+\mathbf{e}$
+    \State \textbf{return} $\mathbf{A}$, $\mathbf{s}$, $\mathbf{b}$, $\mathbf{e}$
+    \end{algorithmic}
+\end{algorithm}
+
+From this, we have our public and private keys, $pk:=(\mathbf{b}\mod{q})\| \rho $ and $sk:=\mathbf{s}\mod{q}$ (both encoded).
+
+\begin{algorithm}[H]
+    \caption{Encryption}
+    \begin{algorithmic}
+    \State \textbf{Input:} $pk$, $m \in \mathcal{B}^{32}$
+    \State first we must extract $\mathbf{A}$ and $mathbf{b}$ from $pk$.
+    \State $\rho:=pk+12\cdot k\cdot \frac{n}{8}$ \Comment $\rho$ was simply appended to the end of $\mathbf{b}$ so we can extract it simply. As we now have $\rho$ we can re-construct $\mathbf{A}$ like we did in key generation.
+    \For{$i\gets 0, k-1$}
+        \For{$j\gets 0, k-1$}
+            \State $\mathbf{A}^T:=Parse(XOF(\rho , i, j))$ 
+        \EndFor
+    \EndFor
+    \For{$i\gets 0, k-1$}
+        \State $\mathbf{r}:=CBD(PRF(r ,N))$ \Comment Where $r \in \mathcal{B}^{32}$ is a random coin.
+        \State $N:=N+1$
+    \EndFor
+    \For{$i\gets 0, k-1$}
+        \State $\mathbf{e}_1:=CBD(PRF(r ,N))$
+        \State $N:=N+1$
+    \EndFor
+    \State $e_2:=CBD(PRF(r, N))$
+    \State $\mathbf{r}:=NTT(\mathbf(r))$
+    \State $\mathbf{u}:=NTT^{-1}(\mathbf{A}^T\circ \mathbf{r})+\mathbf{e}_1$
+    \State $v:=NTT^{-1}(\mathbf{b}^T\circ \mathbf{r})+e_2 + m $
+    \State \textbf{return} $(\mathbf{u}\|v)$
+    \end{algorithmic}
+\end{algorithm}
+
+It is important that the ciphertext composes of two parts, only one of which is dependent on the message, so that the receiver has enough information in order to decrypt correctly.
+
+\begin{algorithm}[H]
+    \caption{Decryption}
+    \begin{algorithmic}
+    \State \textbf{Input:} $sk$, $c$
+    \State $m:=v-NTT^{-1}(\mathbf{s}^T\circ NTT(\mathbf{u}))$
+    \State \textbf{return} $m$
+    \end{algorithmic}
+\end{algorithm}
+
+It may not be readily obvious why it is this decryption works:
+\begin{align*}
+    v-NTT^{-1}(\mathbf{s}^T\circ NTT(\mathbf{u})) &= NTT^{-1}(\mathbf{b}^T\circ \mathbf{r}+e_2+m)-NTT^{-1}(\mathbf{s}^T\circ NTT(\mathbf{u}))\\
+    &=NTT^{-1}(\mathbf{b}^T\circ \mathbf{r}+e_2+m)-NTT^{-1}(\mathbf{s}^T\circ \mathbf{A}^T\circ \mathbf{r}+\mathbf{e}_1)\\
+    &=NTT^{-1}(\mathbf{b}^T\circ \mathbf{r}+e_2+m-\mathbf{s}^T\circ \mathbf{A}^T\circ \mathbf{r}+\mathbf{e}_1)\\
+    &=NTT^{-1}(( \mathbf{A} \circ \mathbf{s})^T \circ \mathbf{r} - (\mathbf{s}^T \circ \mathbf{A} ^T) \circ \mathbf{r} + \mathbf{e} ^T + \mathbf{e}_1 + e_2 + m)\\
+    &=NTT^{-1}(m+\mathbf{e}^T+\mathbf{e}_1+e_2)
+\end{align*}
+
+Therefore, we decrypt each bit as 0 if it is closer to 0 than $\lfloor \frac{q}{2} \mod{q}\rfloor $, otherwise we decrypt as 1.\footnote{I'm not 100\% sure on the last step as I have only seen an LWE setup encrypting a single bit and so you can disregard errors by seeing if it is approx. 0 or $\frac{q}{2}$.}
+
+\section{Applying our security notions to MLWE and \textsc{Kyber}.PKE}
+
+It can be seen that the security of \textsc{Kyber}.PKE can be reduced to the hard problem of MLWE, and in both our security notions, we rely on the statement
+\[\mathbb{P} (\mathcal{A} \mbox{ succeeds}) = 1/2 + \varepsilon \mbox{\qquad where $\varepsilon$ is negligible.}\]
+
+and so we can define what $\mathbb{P} (\mathcal{A} \mbox{ succeeds})$ is in order to begin to analyse the security of \textsc{Kyber}.PKE, and so we have $\mathbb{P} (\mathcal{A} \mbox{ succeeds})=$
+
+\[\mathbb{P} (a =  i |\substack{ (pk, sk) \leftarrow \textsc{Kyber}.PKE.KeyGen(),\\ (m_0, m_1, s) \leftarrow \mathcal{A}(pk),\\ c \leftarrow \textsc{Kyber}.PKE.Enc(pk, m_i),\\ a \leftarrow \mathcal{A}(s, c)}) \qquad \mbox{for $i \in \{0,1\}$.}\]
+
+
+Therefore, the advantage of the adversary (in our earlier definition written as $\varepsilon$),\\ $\mathbf{Adv}^{CPA}_{\textsc{Kyber}.PKE}(\mathcal{A}) =$
+\[ |\mathbb{P} (a =  i |\substack{(pk, sk) \leftarrow \textsc{Kyber}.PKE.KeyGen(),\\ (m_0, m_1, s) \leftarrow \mathcal{A}(pk),\\ c \leftarrow \textsc{Kyber}.PKE.Enc(pk, m_i),\\ a \leftarrow \mathcal{A}(s, c)}) - \frac{1}{2}| \]
+
+In other words, if $\mathbf{Adv}^{CPA}_{\textsc{Kyber}.PKE} \approx 0$ (or the adversary has no advantage), then \textsc{Kyber}.PKE is CCA secure.\par
+
+We can also do the same thing for an MLWE problem, and define the advantage of our adversary over this problem. The MLWE challenge that our adversary must solve is slightly different to our challenge that we gave them for \textsc{Kyber}.PKE, and instead of distinguishing which message created the challenge ciphertext, they must instead determine if the challenge was generated via the MLWE scheme, or if it was instead generated randomly. Thus, our $\mathbf{Adv}^{MLWE}(\mathcal{A})=$
+\[ |\mathbb{P}(b'=1|\substack{\mathbf{A}\leftarrow R^{m\times k}_q,\\ (\mathbf{s, e}) \leftarrow \mathcal{B}^k \times \mathcal{B}^m,\\ \mathbf{b} = \mathbf{As+e},\\ b'\leftarrow \mathcal{A}(\mathbf{A,b})}) - \mathbb{P}(b'=1|\substack{\mathbf{A}\leftarrow R^{m\times k}_q ,\\\mathbf{b}\leftarrow R^m_q,\\ b'\leftarrow \mathcal{A}(\mathbf{A,b})})| \]
+
+It can be seen that $\mathbf{Adv}^{CPA}_{\textsc{Kyber}.PKE}(\mathcal{A})$ can be re-written as:
+
+\[ |\mathbb{P}(b'=1|\substack{\mathbf{A} \leftarrow R^{m\times k}_q ,\\ (\mathbf{s, e}) \leftarrow \{0, 1\}^k \times \{0,1\}^m ,\\ \mathbf{b} = \mathbf{As} + \mathbf{e} + m_i ,\\ a \leftarrow \mathcal{A}(\mathbf{A,b})}) - \frac{1}{2}| \]
+
+by using the definitions of \textsc{Kyber}.PKE's algorithms. Thus, we can show that the IND-CCA security of \textsc{Kyber}.PKE is reducible to that of the MLWE scheme, $\mathbf{Adv}^{MLWE}(\mathcal{A})\approx $
+\[ |\mathbb{P}(b'=1|\substack{\mathbf{A} \leftarrow R^{m\times k}_q ,\\ (\mathbf{s, e}) \leftarrow \{0, 1\}^k \times \{0,1\}^m ,\\ \mathbf{b} = \mathbf{As} + \mathbf{e} + m_i ,\\ a \leftarrow \mathcal{A}(\mathbf{A,b})}) - \frac{1}{2}| \]
+
+as $\mathbb{P}(b'=1|\substack{\mathbf{A}\leftarrow R^{m\times k}_q ,\\\mathbf{b}\leftarrow R^m_q,\\ b'\leftarrow \mathcal{A}(\mathbf{A,b})})|$ can simply be reduced to the expected value $\frac{1}{2}$.
+
+\[ \Rightarrow \mathbf{Adv}^{CPA}_{\textsc{Kyber}.PKE}(\mathcal{A}) \leq_T \mathbf{Adv}^{MLWE}(\mathcal{A}) \]
+
+\section{conclusion}
+
+From this, we have come to the conclusion that provided MLWE is a hard problem, then \textsc{Kyber}.PKE can be shown to be IND-CPA secure. From this, we understand that in order to demonstrate security flaws in the scheme, we must address the underlying problem of MLWE or attack the scheme through insecure or improper algorithmic design (in much the same way GGH\cite{GGH} was attacked). As such, I believe that it would be relevant and more advantageous to focus my project on attacking the security properties of MLWE, as this may have impacts beyond the proposed scheme (although \textsc{Kyber} will still remain a key focus).
+
+
+\newpage
+    
+\nocite{*}
+\printbibliography
+\end{document}
