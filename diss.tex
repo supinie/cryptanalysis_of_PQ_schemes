@@ -1,7 +1,7 @@
 \documentclass[a4paper, 10pt]{article}
 \usepackage[margin=1.5in]{geometry}
 \usepackage[utf8]{inputenc}
-\usepackage{hyperref}
+\usepackage[hidelinks]{hyperref}
 \usepackage{biblatex}
 \usepackage{amsthm}
 \usepackage{tikz}
@@ -64,20 +64,29 @@
 
 \newpage
 
-\section{List of Definitions, Notation, Abbreviations and Acronyms}
+\section{Preliminaries}
+
+\subsection{Abbreviations and Acronyms
+}
 \begin{acronym}
-    \acro{CCA}{chosen ciphertext attack}
     \acro{CCA2}{adaptive chosen ciphertext attack}
+    \acro{CCA}{chosen ciphertext attack}
     \acro{CPA}{chosen plaintext attack}
+    \acro{CVP}{closest vector problem}
+    \acro{FFT}{fast fourier transform}
+    \acro{IND}{indistinguishability of ciphertexts}
     \acro{KEM}{key encapsulation mechanism}
+    \acro{LLL}{Lenstra, Lenstra and Lov\'asz, 1982}
     \acro{LWE}{learning with errors}
     \acro{LWR}{learning with rounding}
+    \acro{MLWE}{module learning with errors}
     \acro{NIST}{National Institute of Standards and Technology}
+    \acro{NTT}{number theoretic transform}
     \acro{PKE}{public-key encryption}
-    \acro{IND}{indistinguishability of ciphertexts}
-    \acro{CVP}{closest vector problem}
     \acro{SVP}{shortest vector problem}
 \end{acronym}
+
+\subsection{Definitions}
 
 \begin{definition}[\ac{PKE} Scheme]
     Let $\Sigma$ be a \ac{PKE} encryption scheme, consisting of the following three algorithms:
@@ -90,61 +99,133 @@
     \end{itemize}
     $\Sigma$ must also satisfy a correctness condition:
     \[\forall m \in \mathcal{M} \text{ and } \forall (pk, sk) \leftarrow \Sigma .KeyGen\]
-    \[\Sigma .Dec_sk(\Sigma .Enc_pk(m)) = m\]
+    \[\Sigma .Dec_{sk}(\Sigma .Enc_{pk}(m)) = m\]
+    (with probability 1 over the randomness of $Enc$)
 \end{definition}
 
 \textbf{Note:} All security properties discussed will be for \ac{PKE} schemes.
 
-\begin{definition}[Indistinguishable]
-    \[(pk, sk) \leftarrow \Sigma.KeyGen \]
-    An adversary $\mathcal{A}$ produces two messages $m_0, m_1 \in \mathcal{M}$ (of equal length).
-    We choose a bit $b \in \{0,1\}$.
-    \[c = \Sigma .Enc_{pk}(m_b)\] 
-    Give the adversary $(c, pk)$, and allow them to generate a bit $a \in \{ 0,1\}$. If $a=b$, then the adversary has succeeded.\\
-    We say an encryption scheme $\Sigma$ is indistinguishable if the following holds:
-    \[\mathbb{P}(\mathcal{A} \text{ succeeds}) = \frac{1}{2} + \varepsilon \text{\qquad where $\varepsilon $ is negligible.}\] 
-    Intuitively, an encryption scheme has indistinguishability if an adversary is given a challenge ciphertext $c$, they cannot tell if it is from $m_0$ or $m_1$.
-\end{definition}
-\begin{definition}[IND-CPA or CPA security]
+% \begin{definition}[Indistinguishable]
+%     \[(pk, sk) \leftarrow \Sigma.KeyGen \]
+%     An adversary $\mathcal{A}$ produces two messages $m_0, m_1 \in \mathcal{M}$ (of equal length).
+%     We choose a bit $b \in \{0,1\}$.
+%     \[c = \Sigma .Enc_{pk}(m_b)\] 
+%     Give the adversary $(c, pk)$, and allow them to generate a bit $a \in \{ 0,1\}$. If $a=b$, then the adversary has succeeded.\\
+%     We say an encryption scheme $\Sigma$ is indistinguishable if the following holds:
+%     \[\mathbb{P}(\mathcal{A} \text{ succeeds}) = \frac{1}{2} + \varepsilon \text{\qquad where $\varepsilon $ is negligible.}\] 
+%     Intuitively, an encryption scheme has indistinguishability if an adversary is given a challenge ciphertext $c$, they cannot tell if it is from $m_0$ or $m_1$.
+% \end{definition}
+\begin{definition}[\ac{CPA} security, \ac{IND}-\ac{CPA}]
     ``Indistinguishability of ciphertexts under chosen plaintext attack" for an encryption scheme $\Sigma $.\\
     \[(pk, sk) \leftarrow \Sigma.KeyGen \]
     The adversary $\mathcal{A} $ is given $pk$ and outputs two messages $m_0, m_1$ (of equal length), and is also given a challenge ciphertext:
     \[c=\Sigma .Enc_{pk}(m_b)\text{\qquad for a chosen }b \in \{ 0,1\}.\] 
     $\mathcal{A}$ now generates a bit $a \in \{ 0,1\}$, and if $a=b$ then $\mathcal{A}$ has succeeded.\\
-    The encryption scheme has CPA security if:
+    The encryption scheme has \ac{CPA} security if:
     \[\mathbb{P} (\mathcal{A} \text{ succeeds}) = \frac{1}{2} + \varepsilon\text{\qquad where $\varepsilon$ is negligible.}\]
     This can intuitively be thought of as if an attacker is given access to the public key (therefore able to encrypt plaintext's of their choice \textbf{but not decrypt}), then if given the encryption of one of two plaintexts, the attacker has negligible advantage over guessing.
 \end{definition}
-\begin{definition}[IND-CCA or CCA security]
+\begin{definition}[\ac{CCA} security, \ac{IND}-\ac{CCA}]
     ``Indistinguishability of ciphertexts under a chosen ciphertext attack" for an encryption scheme $\Sigma $.\\
     \[(pk, sk) \leftarrow \Sigma.KeyGen \]
     The adversary $\mathcal{A} $ is given $pk$ and a decryption oracle $\mathcal{O}_{\Sigma .Dec_{sk}}$, and outputs $m_0, m_1$ (of equal length). The adversary is only able to query this oracle up until it receives the challenge ciphertext,
     \[c=\Sigma .Enc_{pk}(m_b)\text{\qquad for a chosen }b \in \{ 0,1\}.\] 
     $\mathcal{A} $ then generates a bit $a \in \{ 0, 1\}$, and if $a=b$ then $\mathcal{A} $ has succeeded.
-    The encryption scheme has CCA security if:
+    The encryption scheme has \ac{CCA} security if:
     \[\mathbb{P} (\mathcal{A} \text{ succeeds}) = \frac{1}{2} + \varepsilon \text{\qquad where $\varepsilon$ is negligible.}\]
     Intuitively, this is if an adversary is able to ask for decryptions before given the challenge, once given the challenge ciphertext they have negligible advantage over guessing.
 \end{definition}
-\begin{definition}[IND-CCA2 or CCA2 security]
+\begin{definition}[\ac{CCA2} security, \ac{IND}-\ac{CCA2}]
     ``Indistinguishability of ciphertexts under an adaptive chosen ciphertext attack" for an encryption scheme $\Sigma $.\\
     \[(pk, sk) \leftarrow \Sigma.KeyGen \]
     The adversary $\mathcal{A} $ is given $pk$ and a decryption oracle $\mathcal{O}_{Dec_{sk}}$, and outputs $m_0, m_1$ (of equal length). The adversary then receives the challenge ciphertext,
     \[c=\Sigma .Enc_{pk}(m_b)\text{\qquad for a chosen }b \in \{ 0,1\}.\]
     but may continue to query $\mathcal{O}_{Dec_{sk}}$ provided the requested decryption is not of $c$
     $\mathcal{A} $ then generates a bit $a \in \{ 0, 1\}$, and if $a=b$ then $\mathcal{A} $ has succeeded.
-    The encryption scheme has CCA security if:
+    The encryption scheme has \ac{CCA2} security if:
     \[\mathbb{P} (\mathcal{A} \text{ succeeds}) = \frac{1}{2} + \varepsilon \text{\qquad where $\varepsilon$ is negligible.}\]
     Intuitively, this can be thought of as if an adversary has the ability to decrypt any ciphertext other than the challenge, can they decrypt the challenge.
 \end{definition}
 
-\textbf{Note:} We shall use $\mathcal{B} $ to denote the set of 8-bit unsigned integers (or bytes), ie. the set $\{0, ..., 255\}$
+\subsection{Notation}
 
+We shall use $\mathcal{B} $ to denote the set of 8-bit unsigned integers (or bytes), ie. the set $\{0, ..., 255\}$. Reals and integers will be denoted by lowercase letters, distributions by capital letters. Bold letters denote vectors (lower case) or matrices (capital), with the $i$th element of a vector $\mathbf{v}$ being denoted by $\mathbf{v}_i$, and the $j$th column of a matrix $\mathbf{M}$ by $\mathbf{m}_j$, and $\mathbf{M}[i][j]$ denotes the entry in row $i$ and column $j$ (all vectors will be column vectors unless otherwise stated).
 
+\begin{definition}[Linearly independent]
+    The set of vectors $\{\textbf{v}_1,...,\textbf{v}_m\}$ are linearly independent if $\Sigma_{i=1}^m \lambda _i \mathbf{v}_i = 0$ only has the trivial solution, $\lambda _1 = ... = \lambda _m = 0$.
+\end{definition}
 
-\newpage
+\begin{definition}[Span]
+    Let the span of a set of vectors $\{\textbf{v}_1,...,\textbf{v}_m\}$ be the set of all linear combinations $\Sigma_{i=1}^m \lambda _i \mathbf{v}_i$, where $\lambda _i \in \mathbb{R}$
+\end{definition}
 
+\begin{definition}[Inner product and norm]
+    Let $\mathbf{v}, \mathbf{w} \in \mathbb{R}^n$. The inner product of $\mathbf{v}$ and $\mathbf{w}$, $\langle \mathbf{v}, \mathbf{w} \rangle = \Sigma_{i=1}^n \mathbf{v}_i \mathbf{w}_i$ and the norm of $\mathbf{v}$, $|\mathbf{v}| = \sqrt{\langle \mathbf{v}, \mathbf{v} \rangle}$.
+\end{definition}
 
-\section{Understanding the LWE problem}
+\subsection{Standard Algorithms}
+
+\begin{definition}[\ac{FFT}]
+    Given $f:G \rightarrow \mathbb{C}$ where $G$ is an abelian group, \ac{FFT} will evaluate $\hat{f}(\chi):=\Sigma _{g \in G}f(g)\chi (g)$ for all $\chi \in \hat{G}$ where $\hat{G}$ is the dual group of $G$. For $f:(\mathbb{Z}/q\mathbb{Z})^n \rightarrow \mathbb{C}$, the Fourier transform is $\hat{f}(\mathbf{v}) = \Sigma _\mathbf{u} e^{\frac{2 \pi i}{q}\mathbf{v}^T\mathbf{u}}f(\mathbf{u})$.
+\end{definition}
+
+\begin{definition}[\ac{LLL}]
+    Let $\mathbf{B}$ be the basis matrix for a lattice $\mathcal{L}$, with the corresponding Gram-Schmidt orthogonal basis matrix $\mathbf{B}^*$. This is found by first computing the Gram-Schmidt coefficients 
+    
+    \[\mu _{ij}=\frac{\langle \mathbf{b}_i,\mathbf{b}^*_j\rangle}{\langle\mathbf{b}^*_j,\mathbf{b}^*_j\rangle} \mbox{\qquad , $1 \leq j \leq i \leq n$}\] 
+    
+    and set
+    
+    \[\mathbf{b}^*_i=\mathbf{b}_i-\sum_{j=1}^{i-1} \mu _{i,j}\mathbf{b}^*_j\]
+    with $\mathbf{b}^*_1=\mathbf{b}_1$. Then $\mathbf{B}$ is LLL-reduced if both conditions below hold.
+    \begin{enumerate}
+        \item $|\mu_{ij} \leq \frac{1}{2}$ for $1 \leq j \leq i \leq n$.
+        \item $|\mathbf{b}^*_i|^2 \geq (\frac{3}{4} - \mu ^2_{i,i-1})|\mathbf{b}^*_{i_1}|^2$ for $2 \leq i \leq n$.
+    \end{enumerate}
+    This gives us algorithm \ref{alg:LLL}.
+    \begin{algorithm}[h]
+        \caption{\ac{LLL}}\label{alg:LLL}
+        \begin{algorithmic}[1]
+        \State \textbf{Input:} $\mathbf{B}$
+        \State $k=2$
+        \State $\mathbf{b}^*_1=\mathbf{b}_1$
+        \State $c_1 = |\mathbf{b}^*_1|^2$
+        \If{$k > n$}
+            \State \textbf{return} $\mathbf{B}$
+        \EndIf
+        \For{$k\gets(k-1),1$} \Comment Reduce $\mathbf{b}_k$ using previous $\mathbf{b}_j$'s.
+            \State  $\mu _{ij}=\frac{\langle \mathbf{b}_i,\mathbf{b}^*_j\rangle}{\langle\mathbf{b}^*_j,\mathbf{b}^*_j\rangle} \mbox{\qquad , $1 \leq j \leq i \leq n$}$
+            \State $\mathbf{b}_k = \mathbf{b}_k - \lceil \mu _{kj}\mathbf{b}_j \rceil$
+            \State $\mathbf{b}^*_k = \mathbf{b}_k-\sum_{i=1}^{k-1} \mu _{k,i}\mathbf{b}^*_i$
+            \State $c_k=|\mathbf{b}_k^*|^2$
+            \State  $\mu _{ij}=\frac{\langle \mathbf{b}_i,\mathbf{b}^*_j\rangle}{\langle\mathbf{b}^*_j,\mathbf{b}^*_j\rangle} \mbox{\qquad , $1 \leq j \leq i \leq n$}$
+        \EndFor
+        \If{$c_k\geq(\frac{3}{4} - \mu ^2_{k,k-1})c_{k-1}$}
+            \State $k=k+1$
+            \State \textbf{Go to line 3}
+        \Else
+            \State $temp = \mathbf{b}_k$
+            \State $\mathbf{b}_k = \mathbf{b}_{k-1}$
+            \State $\mathbf{b}_{k-1} = temp$
+            \State \textbf{Go to line 3}
+        \EndIf
+        \end{algorithmic}
+    \end{algorithm}
+\end{definition}
+
+\begin{definition}[\ac{NTT}]
+    \ac{NTT} is a method that allows cheap and efficient multiplications in $R_q$, a polynomial ring. Let $g=\sum_{i=0}^{n-1}g_iX^i$ be a polynomial in $R_q$, then let
+    \[NTT(g)=\hat{g}=\sum_{i=0}^{n-1}\hat{g}_iX^i \mbox{,\qquad where } \hat{g}_i = \sum_{j=0}^{n-1}\psi ^jg_j\omega ^{ij}\]
+    and gives
+    \[NTT(\hat{g})=g=\sum_{i=0}^{n-1}g_iX^i \mbox{,\qquad where } g_i = n^{-1}\psi ^{-i}\sum^{n-1}_{j=0}\hat{g}_j\omega ^{-ij}\]
+    Note, that this is done so that both $NTT$ and $NTT^{-1}$ can be computed with very similar functions and the computation is almost identical besides the difference in coefficient. Also, note that this allows us to easily and efficiently compute $f \dot g$, $f,g \in R_q$, using $f \dot g = NTT^-1(NTT(f)\circ NTT(g))$, where $\circ$ is pointwise multiplication. We also define the application of $NTT$ or $NTT^{-1}$ to a vector or matrix with elements in $R_q$ as $NTT$ or $NTT^{-1}$ being applied to each individual entry. We also define $\circ$ being applied to vectors or matrices as being usual multiplication but where the individual products of entries are pointwise multiplications of coefficients.
+\end{definition}
+
+\begin{definition}[BKZ]
+    test
+\end{definition}[BKZ]
+
+\section{Understanding the \ac{LWE} problem}
 
 \textsc{Kyber}.\ac{PKE} is a module \ac{LWE} based encryption scheme; relying on the hardness of the of the \ac{LWE} problem -  believed to be hard for both classical and quantum computers, first introduced by O. Regev ***cite regev lwe****. Below is an informal mod $q$ set-up for the \ac{LWE} problem for a prime $q$:
 
@@ -155,12 +236,28 @@
     \item Let $\mathbf{b} = \mathbf{A}\mathbf{s}+\mathbf{e}$ over $\mathbb{F}_q^m$
 \end{enumerate}
 
-Now, given $(\mathbf{A},\mathbf{b})$, find $\mathbf{s}$. Alternatively, the problem may be stated as given $(\mathbf{A},\mathbf{b})$, determine if $(\mathbf{A},\mathbf{b})$ was generated from our LWE set-up or uniformly at random. This problem can be reduced to solving the lattice problems \ac{SVP} or \ac{CVP}.\par  
+Now, given $(\mathbf{A},\mathbf{b})$, find $\mathbf{s}$. Alternatively, the problem may be stated as given $(\mathbf{A},\mathbf{b})$, determine if $(\mathbf{A},\mathbf{b})$ was generated from our \ac{LWE} set-up or uniformly at random. Formally defined, this is as follows:\par
 
-First we consider the  $q$-ary lattice
+\begin{definition}[\ac{LWE}]
+    Let $n,m,q \in \mathbb{N}$. Let $\chi _\mathbf{s}$, $\chi _\mathbf{e}$ be distributions over $\mathbb{Z}/q\mathbb{Z}$. Further, let $LWE_{n,m,q,\chi _\mathbf{s}, \chi _\mathbf{e}}$ be the probability distribution on $(\mathbb{Z}/q\mathbb{Z})^{m \times n} \times (\mathbb{Z}/q\mathbb{Z})^m$ from independently and uniformly sampling coordinates of $\mathbb{A} \in(\mathbb{Z}/q\mathbb{Z})^{m \times n}$ over $\mathbb{Z}/q\mathbb{Z}$, independently sampling coordinates of $\mathbf{s}\in (\mathbb{Z}/q\mathbb{Z})^n$, $\mathbf{e}\in (\mathbb{Z}/q\mathbb{Z})^m$ from $\chi _\mathbf{e}$ and $\chi _\mathbf{e}$ respectively. This outputs $(\mathbf{A},\mathbf{As} + \mathbf{e})$.
+
+    \begin{itemize}
+        \item \textbf{Decision-LWE:} Distinguish $LWE_{n,m,q,\chi _\mathbf{s}, \chi _\mathbf{e}}$ from the uniform distribution over $(\mathbb{Z}/q\mathbb{Z})^{m \times n} \times (\mathbb{Z}/q\mathbb{Z})^m$.
+        \item \textbf{Search-\ac{LWE}:} Given a sample from $LWE_{n,m,q,\chi _\mathbf{s}, \chi _\mathbf{e}}$, recover $\mathbf{s}$.
+    \end{itemize}
+\end{definition}
+
+This problem can be reduced to solving the lattice problems \ac{SVP} or \ac{CVP}.\par  
+
+\subsection{Lattices}
+
+Let $\mathbf{B} \in \mathbb{R} ^{d\times m}$ where the columns, $\mathbf{b}_i$, are linearly independent basis vectors\footnote{We will assume that $d=m$ unless otherwise stated.}. This can also be thought of as a set $\mathbf{B}=\{\mathbf{b}_1,...,\mathbf{b}_m\}\subset \mathbb{R} ^d$, where as before, $\mathbf{b}_i$ are linearly independent basis vectors. The lattice generated by $\mathbf{B}$ is defined as $\mathcal{L} = \mathcal{L} (\mathbf{B}) := \{\mathbf{B} \mathbf{x} | \mathbf{x} \in \mathbb{Z} ^d\}$. We say $Vol(\mathcal{L}) = \sqrt{det(\mathbf{B} \mathbf{B}^T)}$.
+
+
+For this reduction to lattice problems, let us first consider the  $q$-ary lattice
 \[\mathcal{L}_{Im(\mathbf{A})}=\{y \in \mathbb{Z}^m | y=\mathbf{A}z\mod{q} \mbox{ for some } z \in \mathbb{Z}^n \}\]
 from the image of our matrix $\mathbf{A}$, $Im(\mathbf{A})={\mathbf{A}x|x\in \mathbb{F}_q^n}$, which we can see has the volume
-\[Vol(\mathcal{L}_Im(\mathbf{A}))=q^{m-n}\text{.}\]
+\[Vol(\mathcal{L}_{Im(\mathbf{A})})=q^{m-n}\text{.}\]
 
 This lattice is generated by the column vectors of our matrix $\mathbf{A}\mod{q}$. From here, we can find our $m \times m$ basis matrix, $\textbf{B}_{Im(\textbf{A})}$ through the reduction of the $(n+m) \times m$ matrix
 \[\mathbf{A}^T_q = (\frac{\mathbf{A}^T}{q\mathbf{I}_m})\]
@@ -173,17 +270,40 @@ This lattice is generated by the column vectors of our matrix $\mathbf{A}\mod{q}
     Given a lattice $\mathcal{L}$ with basis matrix $\textbf{B}$, and a vector $\mathbf{v} \in \mathbb{R}^n$, find a vector $\mathbf{v} \in \mathcal{L}$ such that $|\mathbf{v} - \mathbf{w}|$ is minimal.
 \end{definition}
 
-Therefore, we can see that given $(\mathbf{A}, \mathbf{b})$ from an LWE problem, we can use these to generate a lattice $\mathcal{L}_{Im(\mathbf{A})}$. Then by finding the closest point to $\mathbf{b} = \mathbf{As} + \mathbf{e}$, we can find $\mathbf{s}$ (the closest vector to $\mathbf{b}$ should be $\mathbf{As}$ given $\mathbf{e}$ is small enough) - solving the LWE problem if CVP can be solved.
+Therefore, we can see that given $(\mathbf{A}, \mathbf{b})$ from an \ac{LWE} problem, we can use these to generate a lattice $\mathcal{L}_{Im(\mathbf{A})}$. Then by finding the closest point to $\mathbf{b} = \mathbf{As} + \mathbf{e}$, we can find $\mathbf{s}$ (the closest vector to $\mathbf{b}$ should be $\mathbf{As}$ given $\mathbf{e}$ is small enough) - solving the \ac{LWE} problem if \ac{CVP} can be solved.
+
 % \cite{LWR}.
 
-\newpage
 
-\section{Algorithm specification of \textsc{Kyber}.PKE}
 
-\textsc{Kyber}.PKE is defined over the ring $R \equiv \mathbb{Z} /(X^n+1)$ and $R_q\equiv \mathbb{Z}_q[X]/(X^n+1)$ where $n=2^{n'-1}$ s.t. $X^{n}+1$ is the $2^{n'}$\textsuperscript{th} cyclotomic polynomial [citecrystals]. In relation to our earlier explained LWE problem, $R$ is $\mathbb{F}$ and $R_q$ is $\mathbb{F}_q$. We begin, by generating our matrix $\mathbf{A}$ using the following algorithm:
+\section{The Dual and Primal Attacks}
+
+Both the dual and primal attacks are approaches widely believed to the most promising approaches to solving the hard lattice problems we have just discussed. Primal attacks rely on embedding techniques followed by lattice reductions (such as BKZ or LLL) in order to solve the posed problems, or alternatively, the use of Voronoi cells and sieving if preprocessing is possible. Dual attacks, meanwhile, utilise the dual lattice, taking short vectors and computing dot products with the target vector to gain evidence whether the target vector lies close to the lattice. This is then repeated with many dual vectors, a distinguisher is constructed and gradient ascent search algorithms used to solve our problems. In this paper, we will focus on the dual attack, due to the recent advancements relative to \textsc{Kyber} ***cite matzot***.
+
+\subsection{Primal Attack}
+
+\subsection{Dual Attack}
+
+\begin{definition}[Dual lattice]
+    Given a lattice $\mathcal{L}$, let $\mathcal{L} ^*$ be the corresponding dual lattice, where $\mathcal{L} ^*$ contains all vectors $\mathbf{v} \in span(\mathcal{L})$ such that $\langle \mathbf{v}, \mathbf{w} \rangle \in \mathbb{Z}$ for all $\mathbf{w} \in \mathcal{L}$. For a full rank lattice with basis $\mathbf{B}$, its dual is given by $\mathbf{B}^{-T}$.
+\end{definition}
+
+The dual attack relies on the following concept; given $(\mathbf{A, b}) \in (\mathbb{Z}/q\mathbb{Z})^{m \times n} \times (\mathbb{Z}/q\mathbb{Z})^m$, find many small vectors $v_i$ such that if our sample is an \ac{LWE} sample, we have $\langle \textbf{b, v}_i \rangle$ is also small, and is distributed according to a modular Gaussian distribution. If this is not the case, and our sample is random, then these values will be distributed randomly (and not necessarily small).
+
+We can use this concept to develop an algorithm that allows us to enumerate the secret from a given \ac{LWE} sample. First, we must find many vectors $(\mathbf{x}_j, \mathbf{y}_j)$ in such a way that $\mathbf{x}_j^T\mathbf{A}=(\mathbf{y}^T_{j,1}||\mathbf{y}^T_{j,2})$ and $(\mathbf{x}_j, \mathbf{y}_{j,2}$ is short, where $\mathbf{y}_{j,1}$ and $\mathbf{y}_{j,2})$ is partitioned in the same way that we split $\mathbf{s}$ into two components, $\mathbf{s}_1$ and $\mathbf{s}_2$ such that $\mathbf{s}^T = (\mathbf{s}_1^T||\mathbf{s}_2^T)$, and similarly, $\mathbf{A}=(\mathbf{A}_1||\mathbf{A}_2)$ such that $\mathbf{b}=\mathbf{As+e}=\mathbf{A}_1 \mathbf{s}_1 + \mathbf{A}_2 \mathbf{s}_2 + \mathbf{e}$.
+
+We are then able to notice that we may create a new sample, $(\mathbf{A}_2, \mathbf{b - A}_1 \bar{\mathbf{s}}_1)$, where $\bar{\mathbf{s}}_1$ is our guess for the first part of the secret. If our guess is correct, then this new sample will act like a genuine \ac{LWE} sample, and we can use the distinguishing methods we earlier described, and will describe this more in-depth later.
+
+
+
+\section{Algorithm specification of \textsc{Kyber}.\ac{PKE}}
+
+\textbf{Note:} We will present a simplified and abstracted version of the algorithm, for example, omitting `compress', `encode' and other such functions in order to more easily analyse the algorithm as opposed to it's implementation.
+
+\textsc{Kyber}.\ac{PKE} is defined over the ring $R \equiv \mathbb{Z} /(X^n+1)$ and $R_q\equiv \mathbb{Z}_q[X]/(X^n+1)$ where $n=2^{n'-1}$ s.t. $X^{n}+1$ is the $2^{n'}$\textsuperscript{th} cyclotomic polynomial [citecrystals]. For this chapter, our notation will be slightly different, with regular upper and lowercase letters denoting elements in $R$ or $R_q$, and our notation for vectors instead denoting vectors with with coefficients in $R$ or $R_q$. In relation to our earlier explained \ac{LWE} problem, $R$ is $\mathbb{F}$ and $R_q$ is $\mathbb{F}_q$. We begin, by generating our matrix $\mathbf{A}$ using the following algorithm:
 \begin{algorithm}[H]
     \caption{Generate keys.}
-    \begin{algorithmic}
+    \begin{algorithmic}[1]
     \State $N:=0$
     \State $(\rho, \sigma ):=G(d)$ \Comment Where G is a hash function s.t. $G:\mathcal{B}^* \rightarrow \mathcal{B}^{32}\times  \mathcal{B}^{32}$
     \For{$i\gets 0, k-1$}
@@ -199,7 +319,7 @@ Therefore, we can see that given $(\mathbf{A}, \mathbf{b})$ from an LWE problem,
         \State $\mathbf{e}:=CBD(PRF(\sigma ,N))$
         \State $N:=N+1$
     \EndFor
-    \State $\mathbf{s}:= NTT(\mathbf{s})$ \Comment Where NTT is a bijection mapping $f \in R_q$ to a polynomial with the coefficient vector.
+    \State $\mathbf{s}:= NTT(\mathbf{s})$ \Comment Where \ac{NTT} is a bijection mapping $f \in R_q$ to a polynomial with the coefficient vector.
     \State $\mathbf{e}:= NTT(\mathbf{e})$
     \State $\mathbf{b}:=\mathbf{As}+\mathbf{e}$
     \State \textbf{return} $\mathbf{A}$, $\mathbf{s}$, $\mathbf{b}$, $\mathbf{e}$
@@ -210,7 +330,7 @@ From this, we have our public and private keys, $pk:=(\mathbf{b}\mod{q})\| \rho 
 
 \begin{algorithm}[H]
     \caption{Encryption}
-    \begin{algorithmic}
+    \begin{algorithmic}[1]
     \State \textbf{Input:} $pk$, $m \in \mathcal{B}^{32}$
     \State first we must extract $\mathbf{A}$ and $\mathbf{b}$ from $pk$.
     \State $\rho:=pk+12\cdot k\cdot \frac{n}{8}$ \Comment $\rho$ was simply appended to the end of $\mathbf{b}$ so we can extract it simply. As we now have $\rho$ we can re-construct $\mathbf{A}$ like we did in key generation.
@@ -239,7 +359,7 @@ It is important that the ciphertext composes of two parts, only one of which is 
 
 \begin{algorithm}[H]
     \caption{Decryption}
-    \begin{algorithmic}
+    \begin{algorithmic}[1]
     \State \textbf{Input:} $sk$, $c$
     \State $m:=v-NTT^{-1}(\mathbf{s}^T\circ NTT(\mathbf{u}))$
     \State \textbf{return} $m$
@@ -255,13 +375,118 @@ It may not be readily obvious why it is this decryption works:
     &=NTT^{-1}(m+\mathbf{e}^T+\mathbf{e}_1+e_2)
 \end{align*}
 
-Therefore, we decrypt each bit as 0 if it is closer to 0 than $\lfloor \frac{q}{2} \mod{q}\rfloor $, ****check and update**** otherwise we decrypt as 1.
+Therefore, we decrypt by rounding to the nearest $\lfloor c \cdot \frac{q}{32} \mod{q}\rfloor $ for some $c \in \mathbb{N}$.
 % \section{Executive Summary}
 
-% \newpage
 
 
+\section{Applying our security notions to \ac{MLWE} and \textsc{Kyber}.\ac{PKE}}
+
+It can be seen that the security of \textsc{Kyber}.\ac{PKE} can be reduced to the hard problem of \ac{MLWE}; in other words, given $LWE_{n,m,q,\chi _\mathbf{s}, \chi _\mathbf{e}}$ is hard then \textsc{Kyber}.\ac{PKE} is \ac{LWE}-\ac{CPA} secure. In both our security notions, we rely on the statement
+\[\mathbb{P} (\mathcal{A} \mbox{ succeeds}) = 1/2 + \varepsilon \mbox{\qquad where $\varepsilon$ is negligible.}\]
+
+and so we can define what $\mathbb{P} (\mathcal{A} \mbox{ succeeds})$ is in order to begin to analyse the security of \textsc{Kyber}.\ac{PKE}, and so we have $\mathbb{P} (\mathcal{A} \mbox{ succeeds})=$
+
+\[\mathbb{P} (a =  i |\substack{ (pk, sk) \leftarrow \textsc{Kyber}.\ac{PKE}.KeyGen(),\\ (m_0, m_1, s) \leftarrow \mathcal{A}(pk),\\ c \leftarrow \textsc{Kyber}.\ac{PKE}.Enc(pk, m_i),\\ a \leftarrow \mathcal{A}(s, c)}) \qquad \mbox{for $i \in \{0,1\}$.}\]
+
+
+Therefore, the advantage of the adversary (in our earlier definition written as $\varepsilon$),\\ $\mathbf{Adv}^{\ac{CPA}}_{\textsc{Kyber}.\ac{PKE}}(\mathcal{A}) =$
+\[ |\mathbb{P} (a =  i |\substack{(pk, sk) \leftarrow \textsc{Kyber}.\ac{PKE}.KeyGen(),\\ (m_0, m_1, s) \leftarrow \mathcal{A}(pk),\\ c \leftarrow \textsc{Kyber}.\ac{PKE}.Enc(pk, m_i),\\ a \leftarrow \mathcal{A}(s, c)}) - \frac{1}{2}| \]
+
+In other words, if $\mathbf{Adv}^{\ac{CPA}}_{\textsc{Kyber}.\ac{PKE}} \approx 0$ (or the adversary has no advantage), then \textsc{Kyber}.\ac{PKE} is \ac{CPA} secure.\par
+
+We can also do the same thing for an \ac{MLWE} problem, and define the advantage of our adversary over this problem. The \ac{MLWE} challenge that our adversary must solve is slightly different to our challenge that we gave them for \textsc{Kyber}.\ac{PKE}, and instead of distinguishing which message created the challenge ciphertext, they must instead determine if the challenge was generated via the \ac{MLWE} scheme, or if it was instead generated randomly. Thus, our $\mathbf{Adv}^{\ac{MLWE}}(\mathcal{A})=$
+\[ |\mathbb{P}(b'=1|\substack{\mathbf{A}\leftarrow R^{m\times k}_q,\\ (\mathbf{s, e}) \leftarrow \mathcal{B}^k \times \mathcal{B}^m,\\ \mathbf{b} = \mathbf{As+e},\\ b'\leftarrow \mathcal{A}(\mathbf{A,b})}) - \mathbb{P}(b'=1|\substack{\mathbf{A}\leftarrow R^{m\times k}_q ,\\\mathbf{b}\leftarrow R^m_q,\\ b'\leftarrow \mathcal{A}(\mathbf{A,b})})| \]
+
+It can be seen that $\mathbf{Adv}^{\ac{CPA}}_{\textsc{Kyber}.\ac{PKE}}(\mathcal{A})$ can be re-written as:
+
+\[ |\mathbb{P}(b'=1|\substack{\mathbf{A} \leftarrow R^{m\times k}_q ,\\ (\mathbf{s, e}) \leftarrow \{0, 1\}^k \times \{0,1\}^m ,\\ \mathbf{b} = \mathbf{As} + \mathbf{e} + m_i ,\\ a \leftarrow \mathcal{A}(\mathbf{A,b})}) - \frac{1}{2}| \]
+
+by using the definitions of \textsc{Kyber}.\ac{PKE}'s algorithms. Thus, we can show that the \ac{IND}-\ac{CPA} security of \textsc{Kyber}.\ac{PKE} is reducible to that of the \ac{MLWE} scheme, $\mathbf{Adv}^{\ac{MLWE}}(\mathcal{A})\approx $
+\[ |\mathbb{P}(b'=1|\substack{\mathbf{A} \leftarrow R^{m\times k}_q ,\\ (\mathbf{s, e}) \leftarrow \{0, 1\}^k \times \{0,1\}^m ,\\ \mathbf{b} = \mathbf{As} + \mathbf{e} + m_i ,\\ a \leftarrow \mathcal{A}(\mathbf{A,b})}) - \frac{1}{2}| \]
+
+as $\mathbb{P}(b'=1|\substack{\mathbf{A}\leftarrow R^{m\times k}_q ,\\\mathbf{b}\leftarrow R^m_q,\\ b'\leftarrow \mathcal{A}(\mathbf{A,b})})|$ can simply be reduced to the expected value $\frac{1}{2}$.
+
+\[ \Rightarrow \mathbf{Adv}^{\ac{CPA}}_{\textsc{Kyber}.\ac{PKE}}(\mathcal{A}) \leq_T \mathbf{Adv}^{\ac{MLWE}}(\mathcal{A}) \]
+
+\section{Tailoring the Dual Attack to \textsc{Kyber}}
+
+Matzot published a paper in which they detail improvements to the dual attack in order to further increase its efficacy at enumerating secrets, something proves very interesting for those interested in the security levels of \textsc{Kyber}. This comes largely through the use of \ac{FFT} during the distinguishing process, allowing us to check all values at once instead of one at a time, as well as improved methods to sample short vectors. The formal definition of the improved algorithm is as follows:
+
+
+\begin{algorithm}[H]
+    \caption{MATZOT Improved Dual Attack}
+    \begin{algorithmic}[1]
+    \State \textbf{Input:} $(n,m,q,\chi _{\mathbf{s}}, \chi _{\mathbf{e}})$ LWE parameters, $\beta _1, \beta _2 \leq d$ where $\beta _1, \beta _2 \in \mathbb{Z}$, $k_{enum}, k_{fft}, k_{lat}$ s.t. $k_{enum} + k_{fft} + k_{lat} = n$, $p \in \mathbb{Z}$ s.t. $p \leq q$, $D \in \mathbb{Z}$, $C \in \mathbb{R}$, and $(\mathbf{A, b})\in (\mathbb{Z}/q\mathbb{Z})^{m \times n} \times (\mathbb{Z}/q\mathbb{Z})^m$ LWE pair.
+    \State
+    \State $\mathbf{A}_{lat} := (\mathbf{a}_{n-k_{lat}}...\mathbf{a}_n)$ \Comment The last $k_{lat}$ columns of $\mathbf{A}$.
+    \State $\alpha = \frac{\sigma _\mathbf{e}}{\sigma _\mathbf{s}}$
+    \State $\mathbf{B} = 
+        \begin{pmatrix}
+            \alpha \mathbf{I}_m & 0\\
+            \mathbf{A}^T_{lat} & q \mathbf{I}_{k_{lat}}
+        \end{pmatrix}$
+    \State $L = shortVectors(\mathbf{B}, \beta _1, \beta _2, D)$ \Comment Where $L$ is a list of D short vectors.
+    \For{all possible $\bar{\mathbf{s}}_{enum}$} \Comment taken in decreasing order of probability according to $\chi _\mathbf{s}$.
+        \State Let T be a table of dimension $p \times ... \times p$ ($k_{fft}$ times).
+        \For{all short vectors $(\alpha \mathbf{x}_j, \mathbf{y}_{lat}) \in L$}
+        \State $\mathbf{y}_{j, fft} = \mathbf{x}^T_j \mathbf{A}_{fft}$
+        \State $\mathbf{y}_{j, enum} = \mathbf{x}^T_j \mathbf{A}_{enum}$
+        \State Add $e^{(\mathbf{x}^T_j\mathbf{b}-\mathbf{y}^T_{j, enum}\bar{\mathbf{s}}_{enum})\frac{2\pi i}{q}}$ to the $[\frac{p}{q}\mathbf{y}_{j, fft}]$th cell of T.
+        \EndFor
+    $FFT(T)$
+    \If{$Re(\frac{1}{\psi (\bar{\mathbf{s}}_{fft})}T[\mathbf{s}_{fft}])>C$}
+        \State \textbf{return} $\bar{\mathbf{s}}_{enum}$
+    \EndIf
+    \EndFor
     
+    \end{algorithmic}
+\end{algorithm}
+
+
+The inputs to this algorithm are:
+\begin{itemize}
+    \item $D$: The number of short vectors to be found.
+    \item $C$: The boundary by which guesses of the secret are judged.
+    \item $\beta _1, \beta _2$: Parameters for $shortVectors$.
+    \item $k_{enum}$: The number of secret coordinates we directly search.
+    \item $k_{fft}$: The number of secret coordinates enumerated using \ac{FFT}.
+    \item $k_{lat}$: Remaining secrets.
+    \item $p$: Modulus for FFT.
+\end{itemize}
+
+We also have $\mathbf{A, b}$ from an \ac{LWE} sample, where $\mathbf{s}$ and $mathbf{e}$ are sampled with known distributions $\chi _\mathbf{s}$ and $\chi _\mathbf{e}$ that have small variances $\sigma ^2_\mathbf{s}$ and $\sigma ^2_\mathbf{e}$ respectively. We then split $\mathbf{s}$ as dictated by our $k$ values, and also $\mathbf{A}$, thus giving us 
+\[\mathbf{As} = \mathbf{A}_{enum}\mathbf{s}_{enum} + \mathbf{A}_{fft}\mathbf{s}_{fft} + \mathbf{A}_{lat}\mathbf{s}_{lat}\].
+
+We can then find 
+    \[B = \begin{pmatrix}
+    \alpha \mathbf{I}_m & 0\\
+    \mathbf{A}^T_{lat} & q \mathbf{I}_{k_{lat}}
+\end{pmatrix}\]
+where $\alpha = \frac{\sigma _\mathbf{e}}{\sigma _\mathbf{s}}$, and is only in place to account for the cases where $\chi _{\mathbf{s}} \neq \chi _{\mathbf{e}}$.
+
+We can now use $shortVectors$ to find $D$ short vectors of $\mathbf{B}$, which can all be separated into the following form:
+
+\[\mathbf{v} \equiv _q \begin{pmatrix}
+\alpha \mathbf{x} \\
+\mathbf{A}^T_{lat}\mathbf{x}
+\end{pmatrix}\]
+and for each, $\mathbf{x}^T\mathbf{b}$
+
+\section{Open Questions}
+MATZOT: To simplify the analysis, we do not assume the recovery of sfft. Although the above
+sum is expected to have large real value when sfft is guessed correctly, it may also be
+large for certain wrong guesses of sfft, provided senum is guessed correctly. This does
+not concern us since we only wish to recover senum.
+
+is there a way to distinguish wrong sfft from correct sfft given senum correct?
+
+other questions from MATZOT paper...
+
+
+How should variables be chosen?
+
+Time mem trade off possible in matzot dual attack?
 % \nocite{*}
 % \printbibliography
 \end{document}
