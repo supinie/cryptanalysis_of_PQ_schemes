@@ -1,75 +1,317 @@
-@book{modern_crypto,
-    title = {Introduction to Modern Cryptography},
-    edition = {Second edition.},
-    author = {J. Katz and Y. Lindell},
-    isbn = {9781466570269},
-    series = {Chapman \& hall/crc cryptography and network security series},
-    year = {2015},
-    publisher =  {Boca Raton : CRC Press/Taylor \& Francis},
+@InProceedings{10.1007/978-3-319-56614-6_4,
+author="Albrecht, Martin R.",
+editor="Coron, Jean-S{\'e}bastien
+and Nielsen, Jesper Buus",
+title="On Dual Lattice Attacks Against Small-Secret LWE and Parameter Choices in HElib and SEAL",
+booktitle="Advances in Cryptology -- EUROCRYPT 2017",
+year="2017",
+publisher="Springer International Publishing",
+address="Cham",
+pages="103--129",
+abstract="We present novel variants of the dual-lattice attack against LWE in the presence of an unusually short secret. These variants are informed by recent progress in BKW-style algorithms for solving LWE. Applying them to parameter sets suggested by the homomorphic encryption libraries HElib and SEAL yields revised security estimates. Our techniques scale the exponent of the dual-lattice attack by a factor of {\$}{\$}(2{\backslash},L)/(2{\backslash},L+1){\$}{\$}when {\$}{\$}{\backslash}log q = {\backslash}varTheta {\{}{\backslash}left( L {\backslash}log n{\backslash}right) {\}}{\$}{\$}, when the secret has constant hamming weight {\$}{\$}h{\$}{\$}and where {\$}{\$}L{\$}{\$}is the maximum depth of supported circuits. They also allow to half the dimension of the lattice under consideration at a multiplicative cost of {\$}{\$}2^{\{}h{\}}{\$}{\$}operations. Moreover, our techniques yield revised concrete security estimates. For example, both libraries promise 80 bits of security for LWE instances with {\$}{\$}n=1024{\$}{\$}and {\$}{\$}{\backslash}log {\_}2 q {\backslash}approx {\{}47{\}}{\$}{\$}, while the techniques described in this work lead to estimated costs of 68 bits (SEAL) and 62 bits (HElib).",
+isbn="978-3-319-56614-6"
+}
+@InProceedings{10.1007/978-3-642-36095-4_19,
+author="Liu, Mingjie
+and Nguyen, Phong Q.",
+editor="Dawson, Ed",
+title="Solving BDD by Enumeration: An Update",
+booktitle="Topics in Cryptology -- CT-RSA 2013",
+year="2013",
+publisher="Springer Berlin Heidelberg",
+address="Berlin, Heidelberg",
+pages="293--309",
+abstract="Bounded Distance Decoding (BDD) is a basic lattice problem used in cryptanalysis: the security of most lattice-based encryption schemes relies on the hardness of some BDD, such as LWE. We study how to solve BDD using a classical method for finding shortest vectors in lattices: enumeration with pruning speedup, such as Gama-Nguyen-Regev extreme pruning from EUROCRYPT '10. We obtain significant improvements upon Lindner-Peikert's Search-LWE algorithm (from CT-RSA '11), and update experimental cryptanalytic results, such as attacks on DSA with partially known nonces and GGH encryption challenges. Our work shows that any security estimate of BDD-based cryptosystems must take into account enumeration attacks, and that BDD enumeration can be practical even in high dimension like 350.",
+isbn="978-3-642-36095-4"
+}
+@InProceedings{10.1007/978-3-642-19074-2_21,
+author="Lindner, Richard
+and Peikert, Chris",
+editor="Kiayias, Aggelos",
+title="Better Key Sizes (and Attacks) for LWE-Based Encryption",
+booktitle="Topics in Cryptology -- CT-RSA 2011",
+year="2011",
+publisher="Springer Berlin Heidelberg",
+address="Berlin, Heidelberg",
+pages="319--339",
+abstract="We analyze the concrete security and key sizes of theoretically sound lattice-based encryption schemes based on the ``learning with errors'' (LWE) problem. Our main contributions are: (1) a new lattice attack on LWE that combines basis reduction with an enumeration algorithm admitting a time/success tradeoff, which performs better than the simple distinguishing attack considered in prior analyses; (2) concrete parameters and security estimates for an LWE-based cryptosystem that is more compact and efficient than the well-known schemes from the literature. Our new key sizes are up to 10 times smaller than prior examples, while providing even stronger concrete security levels.",
+isbn="978-3-642-19074-2"
+}
+@misc{matzov_2022_6412487,
+  author       = {MATZOV},
+  title        = {{Report on the Security of LWE: Improved Dual 
+                   Lattice Attack}},
+  month        = apr,
+  year         = 2022,
+  publisher    = {Zenodo},
+  doi          = {10.5281/zenodo.6412487},
+  url          = {https://doi.org/10.5281/zenodo.6412487}
+}
+@misc{cryptoeprint:2021/557,
+      author = {Thijs Laarhoven and Michael Walter},
+      title = {Dual lattice attacks for closest vector problems (with preprocessing)},
+      howpublished = {Cryptology ePrint Archive, Paper 2021/557},
+      year = {2021},
+      note = {\url{https://eprint.iacr.org/2021/557}},
+      url = {https://eprint.iacr.org/2021/557}
+}
+@InProceedings{10.1007/BFb0023990,
+author="Babai, L{\'a}szl{\'o}",
+editor="Mehlhorn, K.",
+title="On Lov{\'a}sz' lattice reduction and the nearest lattice point problem",
+booktitle="STACS 85",
+year="1985",
+publisher="Springer Berlin Heidelberg",
+address="Berlin, Heidelberg",
+pages="13--20",
+abstract="Answering a question of Vera S{\'o}s, we show how Lov{\'a}sz' lattice reduction can be used to find a point of a given lattice, nearest within a factor of cd (c = const.) to a given point in Rd. We prove that each of two straightforward fast heuristic procedures achieves this goal when applied to a lattice given by a Lov{\'a}sz-reduced basis. The verification of one of them requires proving a geometric feature of Lov{\'a}sz-reduced bases: a c1dlower bound on the angle between any member of the basis and the hyperplane generated by the other members, where {\$}{\$}c{\_}1  = {\backslash}sqrt 2 /3{\$}{\$}.",
+isbn="978-3-540-39136-4"
+}
+@article{AlbrechtPlayerScott+2015+169+203,
+url = {https://doi.org/10.1515/jmc-2015-0016},
+title = {On the concrete hardness of Learning with Errors},
+author = {Martin R. Albrecht and Rachel Player and Sam Scott},
+pages = {169--203},
+volume = {9},
+number = {3},
+journal = {Journal of Mathematical Cryptology},
+doi = {doi:10.1515/jmc-2015-0016},
+year = {2015},
+lastchecked = {2022-08-29}
+}
+@book{KatzJonathan2015Itmc,
+series = {Chapman and hall/crc cryptography and network security series},
+abstract = {"Cryptography is ubiquitous and plays a key role in ensuring data secrecy and integrity as well as in securing computer systems more broadly. Introduction to Modern Cryptography provides a rigorous yet accessible treatment of this fascinating subject. The authors introduce the core principles of modern cryptography, with an emphasis on formal definitions, clear assumptions, and rigorous proofs of security. The book begins by focusing on private-key cryptography, including an extensive treatment of private-key encryption, message authentication codes, and hash functions. The authors also present design principles for widely used stream ciphers and block ciphers including RC4, DES, and AES, plus provide provable constructions of stream ciphers and block ciphers from lower-level primitives.},
+isbn = {9781466570269},
+year = {2015},
+title = {Introduction to modern cryptography},
+edition = {Second edition.},
+language = {eng},
+author = {Katz, Jonathan},
+keywords = {Computer security; Cryptography; COMPUTERS / Operating Systems / General; COMPUTERS / Security / Cryptography; MATHEMATICS / Combinatorics},
+lccn = {2014039042},
+}
+@misc{cryptoeprint:2020/1237,
+      author = {Jianwei Li and Phong Q.  Nguyen},
+      title = {A Complete Analysis of the BKZ Lattice Reduction Algorithm},
+      howpublished = {Cryptology ePrint Archive, Paper 2020/1237},
+      year = {2020},
+      note = {\url{https://eprint.iacr.org/2020/1237}},
+      url = {https://eprint.iacr.org/2020/1237}
+}
+@InProceedings{10.1007/3-540-54458-5_51,
+author="Schnorr, C. P.
+and Euchner, M.",
+editor="Budach, L.",
+title="Lattice basis reduction: Improved practical algorithms and solving subset sum problems",
+booktitle="Fundamentals of Computation Theory",
+year="1991",
+publisher="Springer Berlin Heidelberg",
+address="Berlin, Heidelberg",
+pages="68--85",
+abstract="We report on improved practical algorithms for lattice basis reduction. We present a variant of the L3-algorithm with ``deep insertions'' and a practical algorithm for blockwise Korkine-Zolotarev reduction, a concept extending L3-reduction, that has been introduced by Schnorr (1987). Empirical tests show that the strongest of these algorithms solves almost all subset sum problems with up to 58 random weights of arbitrary bit length within at most a few hours on a UNISYS 6000/70 or within a couple of minutes on a SPARC 2 computer.",
+isbn="978-3-540-38391-8"
+}
+@article{article,
+author = {Zhang, Xue and Zheng, Zhongxiang and Wang, Xiaoyun},
+year = {2022},
+month = {03},
+pages = {132301},
+title = {A detailed analysis of primal attack and its variants},
+volume = {65},
+journal = {Science China Information Sciences},
+doi = {10.1007/s11432-020-2958-9}
+}
+@misc{cryptoeprint:2014/569,
+      author = {Daniele Micciancio and Michael Walter},
+      title = {Fast Lattice Point Enumeration with Minimal Overhead},
+      howpublished = {Cryptology ePrint Archive, Paper 2014/569},
+      year = {2014},
+      doi = {10.1137/1.9781611973730.21},
+      note = {\url{https://eprint.iacr.org/2014/569}},
+      url = {https://eprint.iacr.org/2014/569}
+}
+@InProceedings{10.1007/978-981-15-5191-8_15,
+author="Yasuda, Masaya",
+editor="Takagi, Tsuyoshi
+and Wakayama, Masato
+and Tanaka, Keisuke
+and Kunihiro, Noboru
+and Kimoto, Kazufumi
+and Ikematsu, Yasuhiko",
+title="A Survey of Solving SVP Algorithms and Recent Strategies for Solving the SVP Challenge",
+booktitle="International Symposium on Mathematics, Quantum Theory, and Cryptography",
+year="2021",
+publisher="Springer Singapore",
+address="Singapore",
+pages="189--207",
+abstract="Recently, lattice-based cryptography has received attention as a candidate of post-quantum cryptography (PQC). The essential security of lattice-based cryptography is based on the hardness of classical lattice problems such as the shortest vector problem (SVP) and the closest vector problem (CVP). A number of algorithms have been proposed for solving SVP exactly or approximately, and most of them are useful also for solving CVP. In this paper, we give a survey of typical algorithms for solving SVP from a mathematical point of view. We also present recent strategies for solving the Darmstadt SVP challenge in dimensions higher than 150.",
+isbn="978-981-15-5191-8"
+}
+@InProceedings{10.1007/978-3-030-51938-4_15,
+author="Doulgerakis, Emmanouil
+and Laarhoven, Thijs
+and de Weger, Benne",
+editor="Nitaj, Abderrahmane
+and Youssef, Amr",
+title="Sieve, Enumerate, Slice, and Lift:",
+booktitle="Progress in Cryptology -  AFRICACRYPT 2020",
+year="2020",
+publisher="Springer International Publishing",
+address="Cham",
+pages="301--320",
+abstract="Motivated by recent results on solving large batches of closest vector problem (CVP) instances, we study how these techniques can be combined with lattice enumeration to obtain faster methods for solving the shortest vector problem (SVP) on high-dimensional lattices.",
+isbn="978-3-030-51938-4"
+}
+@misc{cryptoeprint:2012/533,
+      author = {Thijs Laarhoven and Joop van de Pol and Benne de Weger},
+      title = {Solving Hard Lattice Problems and the Security of Lattice-Based Cryptosystems},
+      howpublished = {Cryptology ePrint Archive, Paper 2012/533},
+      year = {2012},
+      note = {\url{https://eprint.iacr.org/2012/533}},
+      url = {https://eprint.iacr.org/2012/533}
 }
 @ebook{joyofcryptography,
     title        = "The Joy of Cryptography",
-    author       = "M. Rosulek",
+    author       = "Mike Rosulek",
+    note         = "\url{https://joyofcryptography.com}",
     url          = "https://joyofcryptography.com"
 } 
-@online{saber,
-    author = {A. Basso et al.},
-    title = {SABER: Mod-LWR based KEM},
-    url = {https://www.esat.kuleuven.be/cosic/pqcrypto/saber/files/saberspecround3.pdf},
+@misc{NIST,
+    title = {Submission require-
+ments and evaluation criteria for the post-quantum cryptography
+standardization process},
+    url = {https://csrc.nist.gov/},
+    year = {2016}
 }
-@online{crystals,
-    author = {R. Avanzi et al.},
-    title = {CRYSTLS-KYBER, Algorithm Specifications and Supporting Documents},
-    url = {https://pq-crystals.org/kyber/data/kyber-specification-round3-20210804.pdf},
-}
-@online{LWR,
-    author = {J. Alwen et al.},
-    title = {Learning with Rounding, Revisited},
-    url = {https://link.springer.com/content/pdf/10.1007%2F978-3-642-40041-4_4.pdf}
-}
-@online{GGH,
-    author = {K. Ludwig},
-    title = {The GGH Cryptosystem},
-    url = {https://kel.bz/post/lattices/},
-}
-@online{kyber,
-    author = {J. Bos et al.},
-    title = {CRYSTALS - Kyber: a CCA-secure module-lattice-based KEM},
-    url = {https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=8406610},
-}
-@article{Regev,
-    author = {Regev, Oded},
-    title = {On Lattices, Learning with Errors, Random Linear Codes, and Cryptography},
-    year = {2009},
-    publisher = {Association for Computing Machinery},
-    issn = {0004-5411},
-    url = {https://doi.org/10.1145/1568318.1568324},
-    doi = {10.1145/1568318.1568324},
-    journal = {J. ACM},
-    articleno = {34},
-}
-@InProceedings{10.1007/978-3-319-70694-8_10,
-    author="Albrecht, Martin R. and Deo, Amit",
-    title="Large Modulus Ring-LWE {\$}{\$}{\backslash}ge {\$}{\$}Module-LWE",
-    booktitle="Advances in Cryptology -- ASIACRYPT 2017",
-    year="2017",
-    publisher="Springer International Publishing",
-    isbn="978-3-319-70694-8"
-}
-@misc{cryptoeprint:2019:930,
-    author       = {Yang Wang and Mingqiang Wang},
-    title        = {Module-LWE versus Ring-LWE, Revisited},
-    howpublished = {Cryptology ePrint Archive, Report 2019/930},
-    year         = {2019},
-    note         = {\url{https://ia.cr/2019/930}},
-}
-@InProceedings{10.1007/978-3-319-96878-0_4,
-    author="Jiang, Haodong and Zhang, Zhenfeng and Chen, Long and Wang, Hong and Ma, Zhi",
-    title="IND-CCA-Secure Key Encapsulation Mechanism in the Quantum Random Oracle Model, Revisited",
-    booktitle="Advances in Cryptology -- CRYPTO 2018",
-    year="2018",
-    publisher="Springer International Publishing",
-    isbn="978-3-319-96878-0"
+@INPROCEEDINGS{365700,
+  author={Shor, P.W.},
+  booktitle={Proceedings 35th Annual Symposium on Foundations of Computer Science},  
+  title={Algorithms for quantum computation: discrete logarithms and factoring},   
+  year={1994},  
+  volume={},  
+  number={},  
+  pages={124-134},  
+  doi={10.1109/SFCS.1994.365700}
 }
 
-  
+@inproceedings{10.1145/1060590.1060603,
+    author = {Regev, Oded},
+    title = {On Lattices, Learning with Errors, Random Linear Codes, and Cryptography},
+    year = {2005},
+    isbn = {1581139608},
+    publisher = {Association for Computing Machinery},
+    address = {New York, NY, USA},
+    url = {https://doi.org/10.1145/1060590.1060603},
+    doi = {10.1145/1060590.1060603},
+    abstract = {Our main result is a reduction from worst-case lattice problems such as SVP and SIVP to a certain learning problem. This learning problem is a natural extension of the 'learning from parity with error' problem to higher moduli. It can also be viewed as the problem of decoding from a random linear code. This, we believe, gives a strong indication that these problems are hard. Our reduction, however, is quantum. Hence, an efficient solution to the learning problem implies a quantum algorithm for SVP and SIVP. A main open question is whether this reduction can be made classical.Using the main result, we obtain a public-key cryptosystem whose hardness is based on the worst-case quantum hardness of SVP and SIVP. Previous lattice-based public-key cryptosystems such as the one by Ajtai and Dwork were only based on unique-SVP, a special case of SVP. The new cryptosystem is much more efficient than previous cryptosystems: the public key is of size \~{O}(n2) and encrypting a message increases its size by \~{O}(n)(in previous cryptosystems these values are \~{O}(n4) and \~{O}(n2), respectively). In fact, under the assumption that all parties share a random bit string of length \~{O}(n2), the size of the public key can be reduced to \~{O}(n).},
+    booktitle = {Proceedings of the Thirty-Seventh Annual ACM Symposium on Theory of Computing},
+    pages = {84–93},
+    numpages = {10},
+    keywords = {quantum computing, statistical queries, computational learning theory, cryptography, lattices, public key encryption},
+    location = {Baltimore, MD, USA},
+    series = {STOC '05}
+}
+
+@inbook{inbook,
+author = {Ducas, Leo},
+year = {2018},
+month = {01},
+pages = {125-145},
+title = {Shortest Vector from Lattice Sieving: A Few Dimensions for Free},
+isbn = {978-3-319-78380-2},
+doi = {10.1007/978-3-319-78381-9_5}
+}
+@inproceedings{inproceedings,
+author = {Micciancio, Daniele and Voulgaris, Panagiotis},
+year = {2010},
+month = {01},
+pages = {1468-1480},
+title = {Faster Exponential Time Algorithms for the Shortest Vector Problem.},
+journal = {Proceedings of the Annual ACM-SIAM Symposium on Discrete Algorithms},
+doi = {10.1137/1.9781611973075.119}
+}
+
+
+
+
+
+
+@article{doi:10.1137/100811970,
+author = {Micciancio, Daniele and Voulgaris, Panagiotis},
+title = {A Deterministic Single Exponential Time Algorithm for Most Lattice Problems Based on Voronoi Cell Computations},
+journal = {SIAM Journal on Computing},
+volume = {42},
+number = {3},
+pages = {1364-1391},
+year = {2013},
+doi = {10.1137/100811970},
+
+URL = { 
+        https://doi.org/10.1137/100811970
+    
+},
+eprint = { 
+        https://doi.org/10.1137/100811970
+    
+}
+}
+
+@InProceedings{10.1007/978-3-642-20901-7_10,
+author="Hanrot, Guillaume
+and Pujol, Xavier
+and Stehl{\'e}, Damien",
+editor="Chee, Yeow Meng
+and Guo, Zhenbo
+and Ling, San
+and Shao, Fengjing
+and Tang, Yuansheng
+and Wang, Huaxiong
+and Xing, Chaoping",
+title="Algorithms for the Shortest and Closest Lattice Vector Problems",
+booktitle="Coding and Cryptology",
+year="2011",
+publisher="Springer Berlin Heidelberg",
+address="Berlin, Heidelberg",
+pages="159--190",
+abstract="We present the state of the art solvers of the Shortest and Closest Lattice Vector Problems in the Euclidean norm. We recall the three main families of algorithms for these problems, namely the algorithm by Micciancio and Voulgaris based on the Voronoi cell [STOC'10], the Monte-Carlo algorithms derived from the Ajtai, Kumar and Sivakumar algorithm [STOC'01] and the enumeration algorithms originally elaborated by Kannan [STOC'83] and Fincke and Pohst [EUROCAL'83]. We concentrate on the theoretical worst-case complexity bounds, but also consider some practical facets of these algorithms.",
+isbn="978-3-642-20901-7"
+}
+@InProceedings{10.1007/978-3-030-25510-7_1,
+author="Doulgerakis, Emmanouil
+and Laarhoven, Thijs
+and de Weger, Benne",
+editor="Ding, Jintai
+and Steinwandt, Rainer",
+title="Finding Closest Lattice Vectors Using Approximate Voronoi Cells",
+booktitle="Post-Quantum Cryptography",
+year="2019",
+publisher="Springer International Publishing",
+address="Cham",
+pages="3--22",
+abstract="The two traditional hard problems underlying the security of lattice-based cryptography are the shortest vector problem (SVP) and the closest vector problem (CVP). For a long time, lattice enumeration was considered the fastest method for solving these problems in high dimensions, but recent work on memory-intensive methods has resulted in lattice sieving overtaking enumeration both in theory and in practice. Some of the recent improvements [Ducas, Eurocrypt 2018; Laarhoven--Mariano, PQCrypto 2018; Albrecht--Ducas--Herold--Kirshanova--Postlethwaite--Stevens, 2018] are based on the fact that these methods find more than just one short lattice vector, and this additional data can be reused effectively later on to solve other, closely related problems faster. Similarly, results for the preprocessing version of CVP (CVPP) have demonstrated that once this initial data has been generated, instances of CVP can be solved faster than when solving them directly, albeit with worse memory complexities [Laarhoven, SAC 2016].",
+isbn="978-3-030-25510-7"
+}
+@article{article,
+author = {Lenstra, Arjen and Lenstra, H. and László, Lovász},
+year = {1982},
+month = {12},
+pages = {},
+title = {Factoring Polynomials with Rational Coefficients},
+volume = {261},
+journal = {Mathematische Annalen},
+doi = {10.1007/BF01457454}
+}
+@article{Kannan1987MinkowskisCB,
+  title={Minkowski's Convex Body Theorem and Integer Programming},
+  author={Ravi Kannan},
+  journal={Math. Oper. Res.},
+  year={1987},
+  volume={12},
+  pages={415-440}
+}
+
+
+
+
+
